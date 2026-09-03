@@ -28,9 +28,13 @@
   },
   "economics": {
     "max_net_execution_cost_usd": 1.2,
+    "max_gas_cost_per_transaction_usd": 1.3,
+    "gas_policy": "hard_cap_per_transaction",
     "require_fresh_gas_estimate": true,
     "require_verified_refunds": true,
-    "fail_closed_on_unknown_cost": true
+    "fail_closed_on_unknown_cost": true,
+    "pause_new_lp_entries_above_gas_cap": true,
+    "resume_new_lp_entries_only_when_gas_at_or_below_cap": true
   },
   "execution": {
     "live_enabled": false,
