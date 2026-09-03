@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0",
+  "observation_type": "manual_market_observation",
+  "observed_at": "2026-09-03T21:26:00+07:00",
+  "network": {
+    "name": "Robinhood Chain",
+    "chain_id": 4663
+  },
+  "source": {
+    "type": "user_screenshot",
+    "verified_on_chain": false,
+    "note": "These values are empirical UI observations supplied for strategy/backtest validation. They must not be treated as authoritative on-chain state."
+  },
+  "gas": {
+    "observed_usd_per_transaction": 1.0,
+    "unit": "USD/TX",
+    "interpretation": "Approximate gas cost per transaction observed by the user; not a hardcoded production gas price. Production decisions must use a fresh gas estimate."
+  },
+  "pools": [
+    {
+      "rank": 1,
+      "pair": "HOTDOG/USDG",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.04,
+      "fee_percent": 4.0,
+      "tvl_usd": 212100.0,
+      "volume_24h_usd": 2080000.0,
+      "volume_tvl_ratio_24h": 9.8067,
+      "apr_displayed_percent": 14310.0
+    },
+    {
+      "rank": 2,
+      "pair": "HOTDOG/USDG",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.0334,
+      "fee_percent": 3.34,
+      "tvl_usd": 65800.0,
+      "volume_24h_usd": 301200.0,
+      "volume_tvl_ratio_24h": 4.5775,
+      "apr_displayed_percent": 5583.0
+    },
+    {
+      "rank": 3,
+      "pair": "HOTDOG/ETH",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.009,
+      "fee_percent": 0.9,
+      "tvl_usd": 31800.0,
+      "volume_24h_usd": 2920000.0,
+      "volume_tvl_ratio_24h": 91.8239,
+      "apr_displayed_percent": 30200.0
+    },
+    {
+      "rank": 4,
+      "pair": "HOTDOG/USDG",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.10,
+      "fee_percent": 10.0,
+      "tvl_usd": 12000.0,
+      "volume_24h_usd": 269800.0,
+      "volume_tvl_ratio_24h": 22.4833,
+      "apr_displayed_percent": 82225.0
+    },
+    {
+      "rank": 5,
+      "pair": "HOTDOG/USDG",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.0389,
+      "fee_percent": 3.89,
+      "tvl_usd": 11400.0,
+      "volume_24h_usd": 3100.0,
+      "volume_tvl_ratio_24h": 0.2719,
+      "apr_displayed_percent": 390.3
+    },
+    {
+      "rank": 6,
+      "pair": "HOTDOG/USDG",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.039,
+      "fee_percent": 3.9,
+      "tvl_usd": 10000.0,
+      "volume_24h_usd": 2900.0,
+      "volume_tvl_ratio_24h": 0.29,
+      "apr_displayed_percent": 418.3
+    },
+    {
+      "rank": 7,
+      "pair": "HOTDOG/USDG",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.0391,
+      "fee_percent": 3.91,
+      "tvl_usd": 9900.0,
+      "volume_24h_usd": 16900.0,
+      "volume_tvl_ratio_24h": 1.7071,
+      "apr_displayed_percent": 2429.0
+    },
+    {
+      "rank": 8,
+      "pair": "HOTDOG/USDG",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.04,
+      "fee_percent": 4.0,
+      "tvl_usd": 4000.0,
+      "volume_24h_usd": 577.33,
+      "volume_tvl_ratio_24h": 0.1443,
+      "apr_displayed_percent": 211.1
+    },
+    {
+      "rank": 9,
+      "pair": "HOTDOG/WETH",
+      "protocol": "uniswap_v4",
+      "fee_displayed": 0.10,
+      "fee_percent": 10.0,
+      "tvl_usd": 3700.0,
+      "volume_24h_usd": 10500.0,
+      "volume_tvl_ratio_24h": 2.8378,
+      "apr_displayed_percent": 10462.0
+    }
+  ],
+  "chart_observation": {
+    "pair_label": "HOTDOG/COS...",
+    "timeframe": "15m",
+    "current_displayed_volume": 5230000.0,
+    "observed_volume_range_low": 3310000.0,
+    "observed_volume_range_high": 8140000.0,
+    "note": "Chart labels are visual observations and are not substituted for canonical pool state."
+  },
+  "strategy_test_case": {
+    "primary_candidate": "HOTDOG/ETH V4 0.90%",
+    "candidate_reason": "Extremely high observed 24h volume relative to TVL, while the fee tier remains material.",
+    "required_bot_behavior": [
+      "Do not select based on displayed APR alone.",
+      "Treat observed ~$1/TX as an economic stress-test input, not a fixed production gas cost.",
+      "Estimate expected fee capture for the actual range and liquidity share.",
+      "Include entry, rebalance, collect, and exit transaction costs in lifecycle economics.",
+      "Prefer holding when an additional transaction is not economically justified.",
+      "Simulate candidate ranges and expected out-of-range time before entry.",
+      "Compare predicted fee income with realized fee-growth accounting after entry.",
+      "Reject if required transaction economics are unknown or fail the configured economic gate."
+    ]
+  }
+}
