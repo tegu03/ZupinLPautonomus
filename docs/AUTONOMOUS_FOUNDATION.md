@@ -10,20 +10,26 @@ Target: Robinhood Chain only, chain ID 4663. Uniswap V4 is primary and V3 second
 4. Classify regime: range-bound, trend-up, trend-down, or high-volatility.
 5. Generate asymmetric/symmetric range candidates from observed volatility.
 6. Score expected occupancy and empirical fee capture.
-7. Apply IL, slippage, gas, mandatory fees and risk buffer.
-8. Enter only if the economic gate passes.
-9. Manage the position through an explicit lifecycle state machine.
-10. Keep execution fail-closed until testnet validation authorizes a separate execution implementation.
+7. Obtain a fresh transaction-specific gas estimate and apply the $1.30 hard gas cap.
+8. Apply IL, slippage, mandatory fees, gas and risk buffer.
+9. Enter only if the economic gate passes.
+10. Manage the position through an explicit lifecycle state machine.
+11. Keep execution fail-closed until testnet validation authorizes a separate execution implementation.
 
 ## Safety invariants
 
 - Wrong chain is a hard failure.
 - Unknown/stale execution cost is a hard failure.
+- New LP entry is blocked when projected gas cost is above $1.30 per required transaction.
 - Live signing and broadcast are disabled by default.
 - Pool-wide volume is an opportunity signal only.
 - Liquidity changes split fee-accounting lifecycles.
 - Rebalance must clear incremental economics; it must not react to noise.
 - No profitability guarantee is made.
+
+## Gas intelligence
+
+The gas layer is deterministic and side-effect free. It classifies fresh transaction-cost observations as `GAS_STABLE`, `GAS_ELEVATED`, `GAS_BLOCKED`, or `GAS_UNKNOWN`. The $1.30 gas ceiling is separate from the existing $1.20 maximum net execution-cost policy; both constraints must pass before a new LP entry is economically eligible.
 
 ## Testnet gate
 
