@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
 
 from web3 import Web3
 
@@ -25,7 +24,7 @@ class ContractCheck:
 
 
 class ContractVerifier:
-    """Fail-closed verifier for configured protocol deployments.
+    """Fail-closed verifier for configured Robinhood contract deployments.
 
     Bytecode existence is necessary but deliberately not treated as proof that
     an address implements the expected protocol. Protocol-specific ABI checks
@@ -57,9 +56,11 @@ class ContractVerifier:
         return ContractCheck(key, checksum, True, True, "contract bytecode present")
 
     def verify_all(self) -> list[ContractCheck]:
-        # Chain identity is always checked before any deployment decision.
         self._rpc.assert_chain()
-        checks = [self.verify_address(key, address) for key, address in self._registry.all_addresses().items()]
+        checks = [
+            self.verify_address(key, address)
+            for key, address in self._registry.all_addresses().items()
+        ]
         failed = [check for check in checks if not check.passed]
         if failed:
             details = "; ".join(f"{c.key}: {c.detail}" for c in failed)
