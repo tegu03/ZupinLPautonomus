@@ -200,7 +200,21 @@ Every market/state input has a maximum age. Stale state must not be used for a l
 
 Block number and retrieval timestamp are recorded with critical reads.
 
-## 10. Testing gates
+## 10. Protocol verification status
+
+Foundation 03 establishes the read boundary before any scanner or execution code:
+
+- V4 readers use the standard `PositionManager`, `StateView`, and `V4Quoter` read interfaces.
+- V4 `poolManager()` relationships are checked against the registry's canonical PoolManager address.
+- V4 `positionInfo(uint256)` is treated as one packed `uint256`; it is not interpreted as a custom multi-word structure.
+- V4 PositionInfo decoding follows the official 200/24/24/8-bit layout.
+- V3 readers verify `PositionManager.factory()` against the canonical registry factory and can verify a pool's `factory()` relationship.
+- Exact 4-byte selectors are unit-tested for every foundation read.
+- A live Robinhood smoke test exists but is opt-in; normal CI remains network-independent.
+
+No signing, transaction broadcasting, autonomous pool scanning, or live LP management is introduced by this foundation step.
+
+## 11. Testing gates
 
 Before enabling live execution:
 
@@ -217,7 +231,7 @@ Before enabling live execution:
 
 A passing test count alone is not sufficient. Tests must cover the actual Robinhood deployment addresses and interfaces.
 
-## 11. Git/VPS workflow
+## 12. Git/VPS workflow
 
 GitHub is the source of truth.
 
