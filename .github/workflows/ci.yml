@@ -7,6 +7,22 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: zupin
+          POSTGRES_PASSWORD: zupin
+          POSTGRES_DB: zupin
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U zupin -d zupin"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      ZUPIN_DATABASE_URL: postgresql+psycopg://zupin:zupin@localhost:5432/zupin
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -14,5 +30,7 @@ jobs:
           python-version: "3.11"
       - name: Install
         run: python -m pip install -e ".[test]"
+      - name: Migrate database
+        run: python -m alembic upgrade head
       - name: Test
         run: python -m pytest -q
