@@ -7,7 +7,7 @@ def test_simulation_fails_closed_for_wrong_chain() -> None:
         rpc_url="http://unused",
         chain_id=46630,
         from_address="0x0000000000000000000000000000000000000001",
-        calldata="0x12345678",
+        calldata="0xdd46508f",
     )
     assert result.status == "CONFLICTED"
     assert not result.eth_call_ok
@@ -18,8 +18,20 @@ def test_simulation_fails_closed_for_wrong_target() -> None:
         rpc_url="http://unused",
         chain_id=4663,
         from_address="0x0000000000000000000000000000000000000001",
-        calldata="0x12345678",
+        calldata="0xdd46508f",
         target="0x0000000000000000000000000000000000000002",
+    )
+    assert result.status == "UNKNOWN"
+    assert not result.eth_call_ok
+
+
+def test_simulation_fails_closed_for_wrong_selector() -> None:
+    result = simulate_position_manager_call(
+        rpc_url="http://unused",
+        chain_id=4663,
+        from_address="0x0000000000000000000000000000000000000001",
+        calldata="0x12345678",
+        target=UNISWAP_V4_POSITION_MANAGER,
     )
     assert result.status == "UNKNOWN"
     assert not result.eth_call_ok
