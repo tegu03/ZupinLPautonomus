@@ -8,7 +8,8 @@ This document is the human-readable companion to the persisted `evidence_records
 |---|---|---|---|
 | `robinhood_chain_evm_4663` | PROVEN | Official Robinhood Chain documentation | EVM-compatible; mainnet chain ID 4663; ETH gas; official RPC and Blockscout are published. |
 | `robinhood_public_rpc_4663` | PROVEN | Official Robinhood Chain documentation | Public RPC exists but is rate-limited and not recommended for production. |
-| `uniswap_contracts_deployed_4663` | PROVEN | Official Uniswap contracts deployment registry | Chain 4663 has deployed PoolManager, Position Manager, V4 Quoter, Universal Router, and related contracts. |
+| `uniswap_contracts_deployed_4663` | PROVEN | Official Uniswap contracts deployment registry | Chain 4663 lists PoolManager, Position Manager, V4 Quoter, StateView, SwapRouter02, Permit2, and related contracts. This is deployment evidence, not proof of runtime bytecode from Zupin's RPC probe. |
+| `robinhood_core_rpc_probe_4663` | UNKNOWN | Zupin read-only probe implemented; runtime result not yet captured | The probe checks `eth_chainId` and `eth_getCode` for the six core Uniswap v4 integration contracts. Transport/malformed RPC failures fail closed and cannot produce PROVEN. |
 | `uniswap_v4_lp_write_4663` | UNKNOWN | No controlled Zupin execution verification yet | Exact pool, calldata, simulation, signer policy, reconciliation, and economic checks are not yet proven as one safe write path. |
 | `krystal_lp_write_4663` | UNKNOWN | No current primary-source write-path verification in this repository | Discovery/API support is not sufficient to authorize writes. |
 
