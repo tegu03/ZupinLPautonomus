@@ -1,6 +1,6 @@
 # Phase 1 — Chain + Protocol Integration
 
-Status: **PLANNED / HANDOFF FROM PHASE 0**
+Status: **IN PROGRESS / CHAIN CAPABILITY VERIFICATION**
 
 Phase 1 owns chain- and protocol-specific capability verification for the initial Robinhood Chain + Uniswap v4 target. It does not authorize production user-fund execution by itself.
 
@@ -31,6 +31,20 @@ Before a write route can be treated as executable capability, verify all of the 
 11. Controlled execution, if permitted by the test environment, produces the expected receipt and state changes.
 12. Receipt/state reconciliation produces canonical evidence.
 
+## Current progress — first deliverable
+
+### Chain capability probe
+
+Implemented in `src/zupin/chain/robinhood.py` and exposed through `scripts/probe_robinhood.py`.
+
+The probe is strictly read-only and checks:
+
+- `eth_chainId` equals `4663`;
+- runtime bytecode exists at the six core Uniswap integration addresses: PoolManager, PositionManager, V4 Quoter, StateView, SwapRouter02, and Permit2;
+- malformed RPC responses and transport failures fail closed rather than becoming `PROVEN`.
+
+The current repository does **not** claim the runtime probe result as PROVEN until a live RPC run captures the evidence. Official documentation and the official Uniswap deployment registry establish the published network/deployment configuration, but they do not substitute for Zupin's runtime/on-chain verification.
+
 ## Fail-closed rules
 
 - `UNKNOWN` or `CONFLICTED` evidence blocks execution.
@@ -43,7 +57,7 @@ Before a write route can be treated as executable capability, verify all of the 
 
 ## Current handoff material
 
-The current `phase-0/controlled-simulation-harness` branch contains reviewed groundwork for several Phase 1 responsibilities, including read-only Robinhood probing, StateView reads, PoolId derivation, PoolKey/pool-state validation, PositionManager simulation, and a controlled native/USDG mint calldata vector. These artifacts are retained but are not counted toward Phase 0 completion.
+The current `phase-1/chain-capability-verification` branch contains reviewed groundwork for several Phase 1 responsibilities, including read-only Robinhood probing, StateView reads, PoolId derivation, PoolKey/pool-state validation, PositionManager simulation, and a controlled native/USDG mint calldata vector. These artifacts are retained as Phase 1 groundwork and are not evidence of production execution readiness.
 
 ## Exit criteria
 
