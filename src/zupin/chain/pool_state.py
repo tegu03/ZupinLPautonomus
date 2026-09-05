@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .pool_discovery import PoolObservation, validate_pool_key
+from .pool_id import derive_pool_id
 
 
 @dataclass(frozen=True)
@@ -38,10 +39,15 @@ def verify_pool_state(pool: PoolObservation, state: PoolStateObservation) -> Poo
         return PoolStateVerification("UNKNOWN", "pool state evidence is not PROVEN")
     try:
         validate_pool_key(pool.pool_key)
+        canonical_pool_id = derive_pool_id(pool.pool_key)
     except ValueError as exc:
         return PoolStateVerification("UNKNOWN", str(exc))
-    if not pool.pool_id or pool.pool_id.lower() != state.pool_id.lower():
-        return PoolStateVerification("CONFLICTED", "pool ID does not match state observation")
+    if not pool.pool_id:
+        return PoolStateVerification("UNKNOWN", "pool ID is required")
+    if pool.pool_id.lower() != canonical_pool_id.lower():
+        return PoolStateVerification("CONFLICTED", "pool metadata pool ID does not match the canonical PoolKey-derived PoolId")
+    if state.pool_id.lower() != canonical_pool_id.lower():
+        return PoolStateVerification("CONFLICTED", "state pool ID does not match the canonical PoolKey-derived PoolId")
     if not state.source_ref:
         return PoolStateVerification("UNKNOWN", "state source_ref is required")
     if state.observed_block < 0:
