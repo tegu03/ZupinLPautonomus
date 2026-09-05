@@ -1,6 +1,6 @@
 # Phase 0 — Foundation Contract
 
-Status: **FINAL CANDIDATE / NON-FINANCIAL FOUNDATION**
+Status: **CLOSED / NON-FINANCIAL FOUNDATION**
 
 Phase 0 establishes the contract that every later implementation phase must obey. It intentionally does not implement or verify protocol-specific LP execution. Real-money autonomous LP execution is disabled.
 
@@ -45,7 +45,7 @@ See [`ROADMAP.md`](ROADMAP.md) and [`PHASE-1.md`](PHASE-1.md).
 
 ## Phase 0 exit checklist
 
-Phase 0 may be declared **CLOSED** only when every item below is explicitly verified:
+Phase 0 is **CLOSED** because every required exit item below has been explicitly verified.
 
 ### Specification consistency
 
@@ -77,9 +77,9 @@ Phase 0 may be declared **CLOSED** only when every item below is explicitly veri
 
 ### CI gate
 
-- [ ] GitHub Actions CI passes on the final Phase 0 commit.
-- [ ] CI executes database migration plus the configured automated test suite.
-- [ ] No failing or required-but-missing foundation check remains.
+- [x] GitHub Actions CI passes on the final Phase 0 commit.
+- [x] CI executes database migration plus the configured automated test suite.
+- [x] No failing or required-but-missing foundation check remains.
 
 **Important:** Phase 0 CI is a foundation verification gate. A CI pass does not prove Robinhood/Uniswap runtime capability and does not authorize production execution.
 
