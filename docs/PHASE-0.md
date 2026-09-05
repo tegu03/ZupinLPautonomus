@@ -32,18 +32,19 @@ The repository contains the non-financial foundation with:
 - Telegram control/observability shell with no manual LP transaction controls;
 - deterministic PnL calendar PNG renderer traceable to a snapshot ID;
 - persistent evidence registry with fail-closed resolution;
-- CI configured with PostgreSQL migration execution.
+- CI configured with PostgreSQL migration execution;
+- read-only Robinhood Chain capability probe with no transaction submission path.
 
 No RPC signer, transaction builder, DEX write adapter, wallet secret handling, or mainnet execution path is enabled in Phase 0.
 
 ## Verification status
 
-- Latest feature branch commit: `4d667789cad815e14a0aa4092d090b0201a0dd7d` at the time of this document update.
-- GitHub Actions wrapper did not expose a completed run for the latest push commits when checked. Therefore CI is **CONFIGURED but NOT CLAIMED PASS** until a completed run is observable.
-- PostgreSQL runtime tests are present and CI now provisions PostgreSQL 16 and runs `alembic upgrade head` before tests.
+- Latest feature branch commit: `1204bcb8c379705d3c091e951c0fb80e1a04d16b` at the time of this document update.
+- GitHub Actions has a previously completed successful CI run for the earlier CI commit, but the wrapper has not exposed a completed run for the newest feature-branch commits. Therefore latest CI is **CONFIGURED but NOT CLAIMED PASS**.
+- PostgreSQL runtime tests are present and CI provisions PostgreSQL 16 and runs `alembic upgrade head` before tests.
 - Robinhood Chain connectivity is proven by current official documentation: chain ID `4663`, ETH gas, public mainnet RPC, and Blockscout explorer.
-- Uniswap official deployment data proves v2/v3/v4-related contracts are deployed on chain `4663`, including PoolManager and Position Manager. This does **not** by itself prove that Zupin's intended autonomous LP write route is safe and executable.
-- Executable Robinhood LP write capability remains `UNKNOWN` until the exact write route, pool selection, simulation/preflight behavior, and reconciliation path are verified.
+- Uniswap official deployment data proves v4 contracts are deployed on chain `4663`, including PoolManager and Position Manager. This does **not** by itself prove that Zupin's intended autonomous LP write route is safe and executable.
+- Executable Robinhood LP write capability remains `UNKNOWN` until the exact write route, pool selection, simulation/preflight behavior, signing boundary, and reconciliation path are verified.
 
 ## Definition of done
 
