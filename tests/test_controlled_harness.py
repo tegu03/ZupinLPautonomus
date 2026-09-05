@@ -1,7 +1,12 @@
+from eth_abi import encode
+
 from zupin.chain.controlled_harness import (
     MINT_POSITION,
     SETTLE_PAIR,
     SWEEP,
+    _abi_encode_bytes_and_bytes_array,
+    _abi_encode_modify_liquidities,
+    _mint_params,
     build_controlled_native_mint_vector,
 )
 from zupin.chain.pool_discovery import PoolKey
@@ -15,6 +20,67 @@ POOL_KEY = PoolKey(
     hook="0x0000000000000000000000000000000000000000",
 )
 RECIPIENT = "0x0000000000000000000000000000000000000009"
+
+
+def _reference_mint_params() -> bytes:
+    return encode(
+        [
+            "(address,address,uint24,int24,address)",
+            "int24",
+            "int24",
+            "uint256",
+            "uint128",
+            "uint128",
+            "address",
+            "bytes",
+        ],
+        [
+            (
+                POOL_KEY.token0,
+                POOL_KEY.token1,
+                POOL_KEY.fee,
+                POOL_KEY.tick_spacing,
+                POOL_KEY.hook,
+            ),
+            -100,
+            100,
+            10**12,
+            10**15,
+            10**6,
+            RECIPIENT,
+            b"",
+        ],
+    )
+
+
+def test_controlled_mint_matches_independent_abi_reference():
+    actual_mint = _mint_params(
+        POOL_KEY,
+        -100,
+        100,
+        10**12,
+        10**15,
+        10**6,
+        RECIPIENT,
+        b"",
+    )
+    assert actual_mint == _reference_mint_params()
+
+    actions = bytes((MINT_POSITION, SETTLE_PAIR, SWEEP))
+    reference_settle = encode(["address", "address"], [POOL_KEY.token0, POOL_KEY.token1])
+    reference_sweep = encode(["address", "address"], [POOL_KEY.token0, RECIPIENT])
+    reference_unlock = encode(
+        ["bytes", "bytes[]"],
+        [actions, [actual_mint, reference_settle, reference_sweep]],
+    )
+    assert _abi_encode_bytes_and_bytes_array(
+        actions, [actual_mint, reference_settle, reference_sweep]
+    ) == reference_unlock
+
+    assert _abi_encode_modify_liquidities(reference_unlock, 1_800_000_000) == (
+        "0xdd46508f"
+        + encode(["bytes", "uint256"], [reference_unlock, 1_800_000_000]).hex()
+    )
 
 
 def test_controlled_native_mint_vector_has_documented_actions():
