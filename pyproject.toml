@@ -12,6 +12,7 @@ dependencies = [
     "alembic>=1.16,<2",
     "psycopg[binary]>=3.2,<4",
     "Pillow>=11,<12",
+    "eth-hash>=0.7,<1",
 ]
 
 [project.optional-dependencies]
