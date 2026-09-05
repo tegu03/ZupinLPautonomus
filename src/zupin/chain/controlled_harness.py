@@ -44,7 +44,9 @@ def _abi_encode_bytes_and_bytes_array(actions: bytes, params: list[bytes]) -> by
     actions_tail = _bytes(actions)
     array_head = _word(len(params))
     offsets = []
-    cursor = 32 + 32 * len(params)
+    # bytes[] element offsets are relative to the start of the array's
+    # element-head area, immediately after the array length word.
+    cursor = 32 * len(params)
     param_tails = []
     for item in params:
         offsets.append(cursor)
