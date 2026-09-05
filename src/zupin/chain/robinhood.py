@@ -23,6 +23,12 @@ UNISWAP_V4_CONTRACTS = {
     "permit2": "0x000000000022d473030f116ddee9f6b43ac78ba3",
 }
 
+# Backward-compatible named constants for existing simulation/test consumers.
+# The mapping above remains the single canonical address source.
+UNISWAP_V4_POOL_MANAGER = UNISWAP_V4_CONTRACTS["pool_manager"]
+UNISWAP_V4_POSITION_MANAGER = UNISWAP_V4_CONTRACTS["position_manager"]
+UNISWAP_V4_QUOTER = UNISWAP_V4_CONTRACTS["v4_quoter"]
+
 
 @dataclass(frozen=True)
 class CapabilityProbe:
