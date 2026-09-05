@@ -5,12 +5,18 @@ This module intentionally performs no transaction signing or broadcasting.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
+import os
 from typing import Any, Callable
 from urllib.request import Request, urlopen
-import json
 
 ROBINHOOD_CHAIN_ID = 4663
-ROBINHOOD_RPC_URL = "https://rpc.mainnet.chain.robinhood.com"
+DEFAULT_ROBINHOOD_RPC_URL = "https://rpc.mainnet.chain.robinhood.com"
+# Production/operator environments may inject a provider RPC. The public endpoint
+# remains the safe default for local development, but may be rate-limited or access-controlled.
+ROBINHOOD_RPC_URL = (
+    os.getenv("ZUPIN_ROBINHOOD_RPC_URL", "").strip() or DEFAULT_ROBINHOOD_RPC_URL
+)
 
 # Canonical Uniswap deployments published for Robinhood Chain (4663).
 # These constants are configuration/evidence inputs only; they do not authorize writes.
