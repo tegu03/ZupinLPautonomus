@@ -1,6 +1,6 @@
 # Phase 0 — Foundation Contract
 
-Status: **IN PROGRESS / NON-FINANCIAL FOUNDATION**
+Status: **FINAL CANDIDATE / NON-FINANCIAL FOUNDATION**
 
 Phase 0 establishes the contract that every later implementation phase must obey. It intentionally does not implement or verify protocol-specific LP execution. Real-money autonomous LP execution is disabled.
 
@@ -17,6 +17,7 @@ Phase ownership is defined centrally in [`ROADMAP.md`](ROADMAP.md). Protocol/cha
 - [x] Telegram UX contract.
 - [x] Wallet/security boundary.
 - [x] Evidence/source policy.
+- [x] Explicit phase ownership and Phase 1 handoff.
 
 ### Non-financial foundation
 
@@ -27,7 +28,7 @@ Phase ownership is defined centrally in [`ROADMAP.md`](ROADMAP.md). Protocol/cha
 - [x] Implement deterministic PnL renderer using fixture ledger data.
 - [x] Implement integration evidence registry.
 
-### Explicitly deferred to Phase 1+
+## Explicitly deferred to Phase 1+
 
 The following artifacts are **not Phase 0 deliverables**. They may remain in the repository as reviewed groundwork, but they are governed and verified under the later phase that owns them:
 
@@ -42,21 +43,45 @@ The following artifacts are **not Phase 0 deliverables**. They may remain in the
 
 See [`ROADMAP.md`](ROADMAP.md) and [`PHASE-1.md`](PHASE-1.md).
 
-## Phase 0 completion criteria
+## Phase 0 exit checklist
 
-Phase 0 is complete when the foundation contract is frozen and independently testable:
+Phase 0 may be declared **CLOSED** only when every item below is explicitly verified:
 
-1. The repository has a reviewed, versioned specification and explicit phase ownership.
-2. Domain invariants have executable tests.
-3. Database schema enforces one active LP position per user.
-4. Financial events are append-only/idempotent.
-5. Secrets are excluded from source control and logs by design.
-6. Telegram UI can display wallet, autonomy status, PnL calendar, and closed-position PnL from fixtures/canonical data without performing transactions.
-7. PnL image generation is deterministic and traceable to a snapshot ID.
-8. Evidence registry can mark integrations `PROVEN`, `INFERRED`, `UNKNOWN`, or `CONFLICTED`.
-9. The architecture explicitly prevents transaction execution while required capability evidence is `UNKNOWN` or `CONFLICTED`.
-10. CI executes the repository's configured lint/type/test/security checks.
-11. No Phase 1+ protocol integration is required to declare the Phase 0 foundation complete.
+### Specification consistency
+
+- [x] `BLUEPRINT.md` defines the product architecture and module boundaries.
+- [x] `DATA-MODEL.md` defines canonical entities, position states, ledger rules, PnL model, and one-position invariant.
+- [x] `SECURITY.md` defines the key boundary, transaction safety requirements, fail-closed rules, and audit requirements.
+- [x] `TELEGRAM-UX.md` defines the control/observability contract without manual LP execution controls.
+- [x] `EVIDENCE-POLICY.md` defines evidence states, source hierarchy, and execution blocking semantics.
+- [x] `ROADMAP.md` is the explicit source of truth for phase ownership.
+- [x] `PHASE-1.md` provides a clear handoff for protocol-specific groundwork and controlled verification.
+
+### Foundation implementation
+
+- [x] Domain invariants have executable tests.
+- [x] Database schema enforces one active LP position per user.
+- [x] Financial events are append-only/idempotent.
+- [x] Telegram foundation is non-transactional.
+- [x] PnL rendering is deterministic and traceable to a snapshot ID.
+- [x] Evidence registry resolves `PROVEN`, `INFERRED`, `UNKNOWN`, and `CONFLICTED` states fail-closed.
+- [x] No Phase 0 component provides a signer or broadcast capability.
+- [x] Secrets are excluded from source control/logging by design.
+
+### Safety and phase boundary
+
+- [x] Real-money autonomous execution remains disabled.
+- [x] Protocol-specific live/controlled verification is explicitly deferred to Phase 1+.
+- [x] `UNKNOWN` and `CONFLICTED` evidence cannot authorize autonomous execution.
+- [x] No Phase 1 artifact is being used as evidence that Phase 0 is complete.
+
+### CI gate
+
+- [ ] GitHub Actions CI passes on the final Phase 0 commit.
+- [ ] CI executes database migration plus the configured automated test suite.
+- [ ] No failing or required-but-missing foundation check remains.
+
+**Important:** Phase 0 CI is a foundation verification gate. A CI pass does not prove Robinhood/Uniswap runtime capability and does not authorize production execution.
 
 ## Phase gates
 
