@@ -1,4 +1,5 @@
 from eth_abi import encode
+import pytest
 
 from zupin.chain.controlled_harness import (
     MINT_POSITION,
@@ -117,6 +118,22 @@ def test_controlled_native_mint_vector_is_deterministic():
     assert first.params == second.params
 
 
+@pytest.mark.parametrize("field_index", [4, 5])
+def test_controlled_mint_rejects_uint128_overflow(field_index):
+    values = [POOL_KEY, -100, 100, 1, 1, 1, RECIPIENT, b""]
+    values[field_index] = 1 << 128
+    with pytest.raises(ValueError, match="uint128"):
+        _mint_params(*values)
+
+
+@pytest.mark.parametrize("field_index", [4, 5])
+def test_controlled_mint_rejects_uint128_negative(field_index):
+    values = [POOL_KEY, -100, 100, 1, 1, 1, RECIPIENT, b""]
+    values[field_index] = -1
+    with pytest.raises(ValueError, match="uint128"):
+        _mint_params(*values)
+
+
 def test_controlled_native_mint_requires_native_token0():
     non_native = PoolKey(
         token0="0x0000000000000000000000000000000000000001",
@@ -125,7 +142,7 @@ def test_controlled_native_mint_requires_native_token0():
         tick_spacing=POOL_KEY.tick_spacing,
         hook=POOL_KEY.hook,
     )
-    try:
+    with pytest.raises(ValueError, match="native currency"):
         build_controlled_native_mint_vector(
             pool_key=non_native,
             recipient=RECIPIENT,
@@ -136,7 +153,3 @@ def test_controlled_native_mint_requires_native_token0():
             amount1_max=1,
             deadline=1,
         )
-    except ValueError as exc:
-        assert "native currency" in str(exc)
-    else:
-        raise AssertionError("non-native token0 must be rejected")
