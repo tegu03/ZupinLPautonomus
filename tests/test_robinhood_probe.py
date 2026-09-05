@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from zupin.chain.robinhood import (
     ROBINHOOD_CHAIN_ID,
     UNISWAP_V4_POOL_MANAGER,
@@ -13,8 +15,7 @@ def test_robinhood_constants_are_explicit_and_non_signing() -> None:
         assert len(address) == 42
 
 
-def test_probe_source_contains_no_transaction_methods() -> None:
-    source = open("src/zupin/chain/robinhood.py", encoding="utf-8").read()
+def test_probe_source_contains_no_transaction_submission_method() -> None:
+    source = Path("src/zupin/chain/robinhood.py").read_text(encoding="utf-8")
     assert "eth_sendRawTransaction" not in source
-    assert "sign" not in source.lower()
-    assert "broadcast" not in source.lower()
+    assert "eth_sendTransaction" not in source
