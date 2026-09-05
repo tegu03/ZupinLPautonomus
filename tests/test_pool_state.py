@@ -41,7 +41,7 @@ def test_consistent_state_is_proven():
     assert verify_pool_state(_pool(), _state()).status == "PROVEN"
 
 
-def test_mismatched_pool_id_is_conflicted():
+def test_mismatched_state_pool_id_is_conflicted():
     result = verify_pool_state(_pool(), _state(pool_id="0x" + "22" * 32))
     assert result.status == "CONFLICTED"
 
@@ -54,19 +54,12 @@ def test_pool_metadata_id_must_match_derived_pool_id():
         source_ref=pool.source_ref,
         pool_id="0x" + "11" * 32,
     )
-    result = verify_pool_state(invalid_pool, _state(pool_id="0x" + "11" * 32))
+    result = verify_pool_state(invalid_pool, _state())
     assert result.status == "CONFLICTED"
 
 
 def test_state_id_must_match_derived_pool_id_even_when_metadata_matches():
-    pool = _pool()
-    invalid_pool = PoolObservation(
-        pool_key=pool.pool_key,
-        observed_at=pool.observed_at,
-        source_ref=pool.source_ref,
-        pool_id="0x" + "11" * 32,
-    )
-    result = verify_pool_state(invalid_pool, _state(pool_id="0x" + "11" * 32))
+    result = verify_pool_state(_pool(), _state(pool_id="0x" + "11" * 32))
     assert result.status == "CONFLICTED"
 
 
