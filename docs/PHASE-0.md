@@ -19,7 +19,8 @@ Phase 0 establishes the contract that later implementation phases must obey. It 
 - [x] Implement Telegram shell without transaction execution.
 - [x] Implement deterministic PnL renderer using fixture ledger data.
 - [x] Implement integration evidence registry.
-- [ ] Verify Robinhood protocol capabilities from primary sources/on-chain for executable write paths.
+- [x] Implement fail-closed EVM simulation boundary for verified Robinhood v4 PositionManager calls (read-only `eth_call` + `eth_estimateGas`; no broadcast).
+- [ ] Verify a concrete Robinhood LP write route end-to-end against a controlled/testnet or forked environment with a verified pool, calldata, approvals, simulation, expected state deltas, and reconciliation.
 
 ## Current Phase 0 code
 
@@ -33,18 +34,18 @@ The repository contains the non-financial foundation with:
 - deterministic PnL calendar PNG renderer traceable to a snapshot ID;
 - persistent evidence registry with fail-closed resolution;
 - CI configured with PostgreSQL migration execution;
-- read-only Robinhood Chain capability probe with no transaction submission path.
+- read-only Robinhood Chain capability probe;
+- read-only EVM simulation boundary that accepts only an already-encoded, verified PositionManager target and performs `eth_call` plus `eth_estimateGas`.
 
 No RPC signer, transaction builder, DEX write adapter, wallet secret handling, or mainnet execution path is enabled in Phase 0.
 
 ## Verification status
 
-- Latest feature branch commit: `1204bcb8c379705d3c091e951c0fb80e1a04d16b` at the time of this document update.
-- GitHub Actions has a previously completed successful CI run for the earlier CI commit, but the wrapper has not exposed a completed run for the newest feature-branch commits. Therefore latest CI is **CONFIGURED but NOT CLAIMED PASS**.
-- PostgreSQL runtime tests are present and CI provisions PostgreSQL 16 and runs `alembic upgrade head` before tests.
 - Robinhood Chain connectivity is proven by current official documentation: chain ID `4663`, ETH gas, public mainnet RPC, and Blockscout explorer.
-- Uniswap official deployment data proves v4 contracts are deployed on chain `4663`, including PoolManager and Position Manager. This does **not** by itself prove that Zupin's intended autonomous LP write route is safe and executable.
-- Executable Robinhood LP write capability remains `UNKNOWN` until the exact write route, pool selection, simulation/preflight behavior, signing boundary, and reconciliation path are verified.
+- Uniswap official deployment data proves v4 contracts are deployed on chain `4663`, including PoolManager and Position Manager. This does **not** by itself prove that Zupin's intended autonomous LP write route is safe and executable. citeturn1search0turn1view0
+- Official Uniswap documentation proves the v4 PositionManager uses command-based `modifyLiquidities()` and documents MINT/SETTLE, INCREASE, DECREASE/TAKE, and fee-collection call construction. Zupin deliberately does not hard-code a protocol-specific calldata encoder until a concrete pool and route are independently verified. citeturn0search0turn0search6
+- A fail-closed simulation boundary is now implemented. It can simulate an externally encoded PositionManager call with `eth_call` and estimate gas, but it has **not** been run against a controlled Robinhood pool in this repository environment.
+- Executable Robinhood LP write capability remains `UNKNOWN` until the exact pool, calldata, approvals/Permit2 path, simulation result, expected state delta, and receipt reconciliation are verified.
 
 ## Definition of done
 
@@ -71,9 +72,9 @@ Blueprint, data model, UX, security, and evidence rules reviewed.
 
 Database/domain/Telegram/rendering foundations exist; all transaction execution remains disabled.
 
-### Gate 0C — Testnet verification
+### Gate 0C — Controlled verification
 
-Adapters are verified against controlled/testnet fixtures where available. No mainnet user funds.
+Adapters are verified against controlled/testnet fixtures where available. If Robinhood testnet lacks the required deployment, use a controlled local fork/fixture rather than claiming testnet support. No mainnet user funds.
 
 ### Gate 0D — Mainnet capability proof
 
