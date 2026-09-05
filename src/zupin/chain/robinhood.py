@@ -63,6 +63,11 @@ def _rpc(method: str, params: list[Any] | None = None, timeout: float = 10.0) ->
     return result["result"]
 
 
+def rpc_read_only(method: str, params: list[Any] | None = None) -> Any:
+    """Execute one read-only JSON-RPC request using the configured endpoint."""
+    return _rpc(method, params)
+
+
 def probe_read_only(rpc: Callable[[str, list[Any] | None], Any] = _rpc) -> CapabilityProbe:
     """Probe chain identity and required contract bytecode without any write operation.
 
