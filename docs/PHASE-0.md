@@ -15,11 +15,23 @@ Phase 0 establishes the contract that later implementation phases must obey. It 
 - [x] Evidence/source policy.
 - [ ] Select production database and migration framework.
 - [ ] Implement schema migrations.
-- [ ] Implement domain models and invariant tests.
+- [x] Implement initial domain models and invariant tests.
 - [ ] Implement Telegram shell without transaction execution.
 - [ ] Implement deterministic PnL renderer using fixture ledger data.
 - [ ] Implement integration evidence registry.
 - [ ] Verify Robinhood protocol capabilities from primary sources/on-chain.
+
+## Current Phase 0 code
+
+The repository now contains a minimal Python domain foundation with:
+
+- evidence-state enum (`PROVEN`, `INFERRED`, `UNKNOWN`, `CONFLICTED`);
+- explicit autonomous position states;
+- one-active-position invariant;
+- fail-closed evidence gate that permits execution only for `PROVEN` capabilities;
+- executable tests covering these invariants.
+
+This is intentionally a non-financial skeleton. It has no RPC, signer, transaction builder, DEX adapter, wallet secret handling, or mainnet execution path.
 
 ## Definition of done
 
