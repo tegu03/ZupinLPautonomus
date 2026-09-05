@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 import json
 
@@ -34,11 +35,16 @@ class SimulationError(RuntimeError):
 def _rpc(rpc_url: str, method: str, params: list[Any], timeout: float = 15.0) -> Any:
     payload = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode()
     request = Request(rpc_url, data=payload, headers={"Content-Type": "application/json"})
-    with urlopen(request, timeout=timeout) as response:
-        result = json.loads(response.read().decode())
+    try:
+        with urlopen(request, timeout=timeout) as response:
+            result = json.loads(response.read().decode())
+    except (HTTPError, URLError, TimeoutError, OSError) as exc:
+        raise SimulationError(f"RPC transport failure: {exc}") from exc
     if "error" in result:
         raise SimulationError(str(result["error"]))
-    return result.get("result")
+    if "result" not in result:
+        raise SimulationError("RPC response missing result")
+    return result["result"]
 
 
 def simulate_position_manager_call(
@@ -75,7 +81,9 @@ def simulate_position_manager_call(
     try:
         _rpc(rpc_url, "eth_call", [tx, "latest"])
         gas_hex = _rpc(rpc_url, "eth_estimateGas", [tx, "latest"])
-        gas = int(gas_hex, 16) if isinstance(gas_hex, str) else None
+        if not isinstance(gas_hex, str) or not gas_hex.startswith("0x"):
+            raise SimulationError("eth_estimateGas returned a non-hex result")
+        gas = int(gas_hex, 16)
     except (SimulationError, ValueError, TypeError) as exc:
         return SimulationResult(chain_id, target, calldata, value_wei, False, None, "UNKNOWN", f"simulation failed: {exc}")
 
