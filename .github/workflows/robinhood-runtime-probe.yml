@@ -28,6 +28,8 @@ jobs:
       - name: Run read-only Robinhood probe
         id: probe
         continue-on-error: true
+        env:
+          ZUPIN_ROBINHOOD_RPC_URL: ${{ secrets.ZUPIN_ROBINHOOD_RPC_URL }}
         run: |
           set +e
           python scripts/probe_robinhood.py > robinhood-runtime-evidence.json
