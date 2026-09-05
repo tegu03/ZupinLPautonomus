@@ -26,7 +26,11 @@ def _word(value: int) -> bytes:
 def _address_word(address: str) -> bytes:
     if len(address) != 42 or not address.startswith("0x"):
         raise ValueError("malformed address")
-    return int(address[2:], 16).to_bytes(32, "big")
+    try:
+        value = int(address[2:], 16)
+    except ValueError as exc:
+        raise ValueError("malformed address") from exc
+    return value.to_bytes(32, "big")
 
 
 def _bytes(value: bytes) -> bytes:
@@ -36,7 +40,6 @@ def _bytes(value: bytes) -> bytes:
 
 def _abi_encode_bytes_and_bytes_array(actions: bytes, params: list[bytes]) -> bytes:
     """Encode abi.encode(bytes, bytes[]) for PositionManager.unlockData."""
-    # Two dynamic arguments: offsets are measured from the start of the tuple.
     head_size = 64
     actions_tail = _bytes(actions)
     array_head = _word(len(params))
@@ -55,7 +58,8 @@ def _abi_encode_bytes_and_bytes_array(actions: bytes, params: list[bytes]) -> by
 
 
 def _abi_encode_modify_liquidities(unlock_data: bytes, deadline: int) -> str:
-    # Canonical selector is kept in simulation.py and is independently tested.
+    if deadline < 0 or deadline >= 1 << 256:
+        raise ValueError("deadline must fit uint256")
     payload = _word(64) + _word(deadline) + _bytes(unlock_data)
     return POSITION_MANAGER_MODIFY_LIQUIDITIES_SELECTOR + payload.hex()
 
@@ -77,8 +81,12 @@ def _mint_params(
         raise ValueError("tick_upper must fit int24")
     if tick_lower >= tick_upper:
         raise ValueError("tick_lower must be less than tick_upper")
-    if liquidity < 0 or amount0_max < 0 or amount1_max < 0:
-        raise ValueError("liquidity and maximum amounts must be non-negative")
+    if liquidity < 0 or liquidity >= 1 << 256:
+        raise ValueError("liquidity must fit uint256")
+    if amount0_max < 0 or amount0_max >= 1 << 128:
+        raise ValueError("amount0_max must fit uint128")
+    if amount1_max < 0 or amount1_max >= 1 << 128:
+        raise ValueError("amount1_max must fit uint128")
     if len(recipient) != 42 or not recipient.startswith("0x"):
         raise ValueError("malformed recipient")
     # abi.encode(PoolKey, int24, int24, uint256, uint128, uint128, address, bytes)
@@ -134,8 +142,6 @@ def build_controlled_native_mint_vector(
     """Build a deterministic native-currency mint fixture; never broadcasts."""
     if pool_key.token0.lower() != "0x" + "0" * 40:
         raise ValueError("controlled native mint requires native currency as token0")
-    if deadline < 0:
-        raise ValueError("deadline must be non-negative")
     mint = _mint_params(
         pool_key,
         tick_lower,
