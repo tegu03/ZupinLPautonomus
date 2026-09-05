@@ -12,6 +12,8 @@ import json
 
 from .robinhood import ROBINHOOD_CHAIN_ID, UNISWAP_V4_POSITION_MANAGER
 
+POSITION_MANAGER_MODIFY_LIQUIDITIES_SELECTOR = "0xdd46508f"
+
 
 @dataclass(frozen=True)
 class SimulationResult:
@@ -48,7 +50,7 @@ def simulate_position_manager_call(
     value_wei: int = 0,
     target: str = UNISWAP_V4_POSITION_MANAGER,
 ) -> SimulationResult:
-    """Simulate an already-encoded PositionManager call.
+    """Simulate an already-encoded PositionManager modifyLiquidities call.
 
     The caller must supply calldata produced by a verified protocol encoder.
     This function deliberately does not construct protocol-specific calldata.
@@ -59,6 +61,8 @@ def simulate_position_manager_call(
         return SimulationResult(chain_id, target, calldata, value_wei, False, None, "UNKNOWN", "target is not the verified Robinhood v4 PositionManager")
     if not calldata.startswith("0x") or len(calldata) < 10:
         return SimulationResult(chain_id, target, calldata, value_wei, False, None, "UNKNOWN", "calldata is missing or malformed")
+    if calldata[:10].lower() != POSITION_MANAGER_MODIFY_LIQUIDITIES_SELECTOR:
+        return SimulationResult(chain_id, target, calldata, value_wei, False, None, "UNKNOWN", "calldata selector is not verified PositionManager.modifyLiquidities(bytes,uint256)")
     if not from_address.startswith("0x") or len(from_address) != 42:
         return SimulationResult(chain_id, target, calldata, value_wei, False, None, "UNKNOWN", "from address is missing or malformed")
     if value_wei < 0:
