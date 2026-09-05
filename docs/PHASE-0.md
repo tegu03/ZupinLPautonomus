@@ -1,6 +1,6 @@
 # Phase 0 — Foundation Contract
 
-Status: **IN PROGRESS / DESIGN + SAFETY FOUNDATION**
+Status: **IN PROGRESS / NON-FINANCIAL SKELETON**
 
 Phase 0 establishes the contract that later implementation phases must obey. It intentionally does not enable real-money autonomous LP execution.
 
@@ -13,25 +13,37 @@ Phase 0 establishes the contract that later implementation phases must obey. It 
 - [x] Telegram UX contract.
 - [x] Wallet/security boundary.
 - [x] Evidence/source policy.
-- [ ] Select production database and migration framework.
-- [ ] Implement schema migrations.
+- [x] Select production database and migration framework: PostgreSQL + SQLAlchemy + Alembic.
+- [x] Implement schema migrations, including append-only database triggers and one-active-position constraint.
 - [x] Implement initial domain models and invariant tests.
-- [ ] Implement Telegram shell without transaction execution.
-- [ ] Implement deterministic PnL renderer using fixture ledger data.
-- [ ] Implement integration evidence registry.
-- [ ] Verify Robinhood protocol capabilities from primary sources/on-chain.
+- [x] Implement Telegram shell without transaction execution.
+- [x] Implement deterministic PnL renderer using fixture ledger data.
+- [x] Implement integration evidence registry.
+- [ ] Verify Robinhood protocol capabilities from primary sources/on-chain for executable write paths.
 
 ## Current Phase 0 code
 
-The repository now contains a minimal Python domain foundation with:
+The repository contains the non-financial foundation with:
 
 - evidence-state enum (`PROVEN`, `INFERRED`, `UNKNOWN`, `CONFLICTED`);
 - explicit autonomous position states;
-- one-active-position invariant;
-- fail-closed evidence gate that permits execution only for `PROVEN` capabilities;
-- executable tests covering these invariants.
+- one-active-position invariant at domain and PostgreSQL levels;
+- append-only/idempotent financial-event storage;
+- Telegram control/observability shell with no manual LP transaction controls;
+- deterministic PnL calendar PNG renderer traceable to a snapshot ID;
+- persistent evidence registry with fail-closed resolution;
+- CI configured with PostgreSQL migration execution.
 
-This is intentionally a non-financial skeleton. It has no RPC, signer, transaction builder, DEX adapter, wallet secret handling, or mainnet execution path.
+No RPC signer, transaction builder, DEX write adapter, wallet secret handling, or mainnet execution path is enabled in Phase 0.
+
+## Verification status
+
+- Latest feature branch commit: `4d667789cad815e14a0aa4092d090b0201a0dd7d` at the time of this document update.
+- GitHub Actions wrapper did not expose a completed run for the latest push commits when checked. Therefore CI is **CONFIGURED but NOT CLAIMED PASS** until a completed run is observable.
+- PostgreSQL runtime tests are present and CI now provisions PostgreSQL 16 and runs `alembic upgrade head` before tests.
+- Robinhood Chain connectivity is proven by current official documentation: chain ID `4663`, ETH gas, public mainnet RPC, and Blockscout explorer.
+- Uniswap official deployment data proves v2/v3/v4-related contracts are deployed on chain `4663`, including PoolManager and Position Manager. This does **not** by itself prove that Zupin's intended autonomous LP write route is safe and executable.
+- Executable Robinhood LP write capability remains `UNKNOWN` until the exact write route, pool selection, simulation/preflight behavior, and reconciliation path are verified.
 
 ## Definition of done
 
